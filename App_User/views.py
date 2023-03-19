@@ -2,6 +2,7 @@ import json
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import status
 from .serializers import ContactQueriesSerializer
 
 # Create your views here.
@@ -9,34 +10,11 @@ from .serializers import ContactQueriesSerializer
 
 class ContactQueriesView(APIView):
     def post(self, request):
-        queryDict = list(request.data.keys())
-        queryDict = json.loads(queryDict[0])
-        serializer = ContactQueriesSerializer(data=queryDict)
-
-        if not serializer.is_valid():
-            return Response(
-                {
-                    "status": 403,
-                    "action": "contact-queries",
-                    "data": serializer.errors,
-                    "message": "Contact Form Fields are not Valid!",
-                }
-            )
-
-        serializer.save()
-
-        return Response(
-            data="Hello",
-            status=None,
-            template_name=None,
-            headers=None,
-            content_type=None,
-        )
-
-        # return Response(
-        #     {
-        #         "status": 200,
-        #         "action": "contact-queries",
-        #         "message": "Your Message Successfully Registered! We Contact You As Soon as Possible!",
-        #     }
-        # )
+        try:
+            data = json.loads(request.body.decode("utf-8"))
+            serializer = ContactQueriesSerializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(data={"details": "Successfully registered"},status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(data=str(e), status=status.HTTP_400_BAD_REQUEST)
