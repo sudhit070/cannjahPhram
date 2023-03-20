@@ -1,5 +1,4 @@
 
-
 import os
 from pathlib import Path
 
@@ -29,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'sslserver',
+    'corsheaders',
     'corsheaders',
     'App_User',
     'rest_framework',
