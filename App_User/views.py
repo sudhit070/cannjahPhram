@@ -11,7 +11,9 @@ from .serializers import ContactQueriesSerializer
 class ContactQueriesView(APIView):
     def post(self, request):
         try:
+            print("******************* request.body ------ ", request.body)
             data = json.loads(request.body.decode("utf-8"))
+            print("******************* data ------ ", data)
             serializer = ContactQueriesSerializer(data=data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
