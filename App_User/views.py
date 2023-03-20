@@ -17,6 +17,8 @@ class ContactQueriesView(APIView):
             serializer = ContactQueriesSerializer(data=data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
+            print("----------------- SuccessFully ------------------")
             return Response(data={"details": "Successfully registered"},status=status.HTTP_200_OK)
         except Exception as e:
+            print("----------------- Failed ------------------")
             return Response(data=str(e), status=status.HTTP_400_BAD_REQUEST)

@@ -8,6 +8,7 @@ class ContactQueries(models.Model):
     related = models.CharField(max_length=100, null=False, blank=False)
     subject = models.CharField(max_length=200, null=False, blank=False)
     message = models.TextField(null=False, blank=False)
+    create_on = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return str(self.email)
