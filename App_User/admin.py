@@ -5,4 +5,4 @@ from .models import *
 # Register your models here.
 @admin.register(ContactQueries)
 class ContactQueriesTable(admin.ModelAdmin):
-    list_display = ['id', 'email', 'create_on','related', 'subject', 'message']
+    list_display = ['id', 'email', 'create_on', 'name','related', 'subject', 'message']

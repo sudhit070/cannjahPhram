@@ -5,6 +5,7 @@ from django.db import models
 
 class ContactQueries(models.Model):
     email = models.EmailField(null=False, blank=False)
+    name = models.CharField(max_length=100, null=False, blank=False, default='')
     related = models.CharField(max_length=100, null=False, blank=False)
     subject = models.CharField(max_length=200, null=False, blank=False)
     message = models.TextField(null=False, blank=False)
