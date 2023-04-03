@@ -11,10 +11,14 @@ from .serializers import ContactQueriesSerializer
 class ContactQueriesView(APIView):
     def post(self, request):
         try:
+            print("******************* request.body ------ ", request.body)
             data = json.loads(request.body.decode("utf-8"))
+            print("******************* data ------ ", data)
             serializer = ContactQueriesSerializer(data=data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
+            print("----------------- SuccessFully ------------------")
             return Response(data={"details": "Successfully registered"},status=status.HTTP_200_OK)
         except Exception as e:
+            print("----------------- Failed ------------------")
             return Response(data=str(e), status=status.HTTP_400_BAD_REQUEST)
