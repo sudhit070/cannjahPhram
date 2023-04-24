@@ -15,7 +15,7 @@ SECRET_KEY = 'django-insecure-r)jwg^elx(1ri=3c%11hsq0m8uu&&g@tyz9$b9-o%*d+g83!$a
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['api-cannjah.onrender.com']
+ALLOWED_HOSTS = ['api-cannjah.onrender.com', '*']
 
 
 # Application definition
@@ -31,7 +31,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'App_User',
     'rest_framework',
-    'product'
+    'product',
+    'medical'
 ]
 
 MIDDLEWARE = [
