@@ -35,7 +35,7 @@ class MedicalRegister(BaseModel):
     #section C resposnible for the applicant (optional)
     resposible_name = models.CharField(max_length=500, null=True, blank=True)
     responsible_date_of_birth = models.DateField(null=True, blank=True)
-    responsible_gender = models.CharField(max_length=20, choices=gender_choices, default=GenderConstants.MALE.value)
+    responsible_gender = models.CharField(max_length=20, choices=gender_choices, null=True, blank=True)
 
     #section D Health care practitioner info (optional)
     practitioner_name = models.CharField(max_length=500, null=True, blank=True)
