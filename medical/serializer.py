@@ -6,6 +6,3 @@ class MedicalRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = MedicalRegister
         fields = "__all__"
-
-class EmailValidation(serializers.Serializer):
-    email = serializers.EmailField()

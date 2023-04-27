@@ -1,6 +1,6 @@
 import json
 from rest_framework.views import APIView
-from medical.serializer import EmailValidation, MedicalRegisterSerializer
+from medical.serializer import MedicalRegisterSerializer
 from rest_framework.serializers import ValidationError
 from rest_framework.response import Response
 from rest_framework import status
@@ -11,12 +11,7 @@ from medical.models import MedicalRegister
 class MedicalRegisterView(APIView):
     def get(self, request):
         try:
-            data = {'email': request.GET.get('email')}
-            # data = json.loads(request.body.decode('utf-8'))
-            serializer = EmailValidation(data=data)
-            serializer.is_valid(raise_exception=True)
-            serialized_data = serializer.validated_data
-            email = serialized_data["email"]
+            email = request.GET.get('email')
             if MedicalRegister.objects.filter(email=email).first():
                 return Response(status=status.HTTP_400_BAD_REQUEST, data={"details": "Email already Registered!", "accepted": False})
             else:
