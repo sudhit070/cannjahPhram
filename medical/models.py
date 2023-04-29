@@ -56,3 +56,6 @@ class MedicalRegister(BaseModel):
     reviewer_name = models.CharField(max_length=200, null=True, blank=True)
     approved = models.BooleanField(default=False)
     approved_date = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return self.email

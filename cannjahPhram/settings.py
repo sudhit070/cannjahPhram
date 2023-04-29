@@ -77,10 +77,19 @@ WSGI_APPLICATION = 'cannjahPhram.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'cannjah',
+        'USER': 'cannjah',
+        'PASSWORD': 'cpSW?Toh&U.A',
+        'HOST':'p3plzcpnl489519.prod.phx3.secureserver.net',
+        'PORT':'3306',
     }
 }
+
+# {
+#     'ENGINE': 'django.db.backends.sqlite3',
+#     'NAME': BASE_DIR / 'db.sqlite3',
+# }
 
 
 # Password validation
