@@ -15,7 +15,7 @@ SECRET_KEY = 'django-insecure-r)jwg^elx(1ri=3c%11hsq0m8uu&&g@tyz9$b9-o%*d+g83!$a
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['api-cannjah.onrender.com', '127.0.0.1:3000']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -83,13 +83,11 @@ DATABASES = {
         'PASSWORD': 'cpSW?Toh&U.A',
         'HOST':'p3plzcpnl489519.prod.phx3.secureserver.net',
         'PORT':'3306',
+    } if not DEBUG else {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-# {
-#     'ENGINE': 'django.db.backends.sqlite3',
-#     'NAME': BASE_DIR / 'db.sqlite3',
-# }
 
 
 # Password validation
@@ -130,9 +128,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
+STATIC_ROOT = '/home/bcsc1pypu0uc/api.cannjah.com/static'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'

@@ -22,6 +22,6 @@ urlpatterns = [
     path('cannjah_admin/', admin.site.urls),
     path('', include('App_User.urls')),
     path('medical/', include('medical.urls')),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

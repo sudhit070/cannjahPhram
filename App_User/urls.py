@@ -5,6 +5,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('', include('rest_framework.urls', namespace='rest_framework')),
-
     path('contact', views.ContactQueriesView.as_view(), name="contactQueries"),
+    path('verify_age/', views.verify_age, name="verify_age")
 ]

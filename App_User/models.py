@@ -16,3 +16,12 @@ class ContactQueries(models.Model):
 
     def __str__(self):
         return str(self.email)
+
+class VisistorLogs(BaseModel):
+    ip = models.GenericIPAddressField()
+    age = models.IntegerField()
+    uuid = models.UUIDField()
+    request_browser = models.CharField(max_length=1000)
+
+    def __str__(self):
+        return str(self.ip)
