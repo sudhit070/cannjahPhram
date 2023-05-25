@@ -1,5 +1,8 @@
 from django.db import models
-
+from django.contrib.auth.models import AbstractUser
+from common.constants import USER_TYPE
+from common.enums import UserType
+from .manager import UserManager
 # Create your models here.
 
 class BaseModel(models.Model):
@@ -25,3 +28,14 @@ class VisistorLogs(BaseModel):
 
     def __str__(self):
         return str(self.ip)
+
+class User(AbstractUser):
+    username = None
+    email = models.EmailField(unique=True)
+    is_password_changed = models.BooleanField(default=False)
+    type_of_user = models.CharField(choices=USER_TYPE, default=UserType.MEDICAL.value, max_length=100)
+
+    objects = UserManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []

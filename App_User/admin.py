@@ -11,3 +11,7 @@ class ContactQueriesTable(admin.ModelAdmin):
 @admin.register(VisistorLogs)
 class VisitorLogsTablle(admin.ModelAdmin):
     list_display = ['id', 'ip', 'request_browser', 'create_time', 'uuid']
+
+@admin.register(User)
+class VisitorLogsTablle(admin.ModelAdmin):
+    list_display = ['id', 'email', 'type_of_user', 'date_joined']

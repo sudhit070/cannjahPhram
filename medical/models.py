@@ -6,7 +6,7 @@ from medical.enums import GenderConstants
 # Create your models here.
 class MedicalRegister(BaseModel):
     #section A Bsic info
-    email = models.EmailField(null=True, blank=True)
+    email = models.EmailField(null=True, blank=True, unique=True)
     name = models.CharField(max_length=500, null=True, blank=True)
     date_of_birth = models.DateField()
     gender = models.CharField(max_length=20, choices=gender_choices, default=GenderConstants.MALE.value)
@@ -57,5 +57,7 @@ class MedicalRegister(BaseModel):
     approved = models.BooleanField(default=False)
     approved_date = models.DateTimeField(null=True, blank=True)
 
+    is_password_changed = models.BooleanField(default=False)
+
     def __str__(self):
-        return self.email
+        return str(self.email)

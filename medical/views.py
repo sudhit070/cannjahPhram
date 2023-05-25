@@ -27,6 +27,6 @@ class MedicalRegisterView(APIView):
             serializer.save()
             return Response(status=status.HTTP_200_OK, data={"details": "Registered Successfull, Please check you're email for furthur process"})
         except ValidationError as e:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={"detals": str(e)})
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"details": str(e)})
         except Exception as e:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={"detals": str(e)})
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"details": str(e)})
