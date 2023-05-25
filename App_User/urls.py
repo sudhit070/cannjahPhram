@@ -9,5 +9,7 @@ urlpatterns = [
     path('contact', views.ContactQueriesView.as_view(), name="contactQueries"),
     path('verify_age', views.verify_age, name="verify_age"),
     path('register', views.RegisterUser.as_view(), name='register_user'),
-    path('password_change', views.password_change)
+    path('password_change', views.password_change),
+    path('forget-password', views.ForgetPasswordView.as_view(), name="password-reset-confirm"),
+    path('reste-passwrod/<uid>/<token>', views.ResetPasswordView.as_view()),
 ]

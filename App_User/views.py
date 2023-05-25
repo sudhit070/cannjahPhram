@@ -15,6 +15,14 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes
+
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes
+from django.urls import reverse
 # Create your views here.
 
 
@@ -34,7 +42,7 @@ class ContactQueriesView(APIView):
 def verify_age(request):
     try:
         meta = request.META
-        ip = meta.get('HTTP_X_FORWARDED_FOR') or meta.get('REMOTE_ADDR')
+        ip = meta.get('HTTP_X_FORWARDED_FOR') or meta.get('REMOTE_ADDR') or None
         request_browser = meta.get('HTTP_USER_AGENT')
         user_agent = str(parse(request_browser))
         visited_time = int(time.time())
@@ -102,3 +110,64 @@ def password_change(request):
 
     except Exception as e:
         return Response(status=status.HTTP_400_BAD_REQUEST, data={"details": str(e)})
+
+class ForgetPasswordView(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            data = request.data
+            email = data.get('email', None)
+            if not email:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={"details": "Please Enter a valid email address"})
+            try:
+                user = User.objects.get(email=email)
+            except:
+                user = None
+
+            if not user:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={"details": "The Email address is Invalid"})
+
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.email))
+            password_reset_url = f"/{uid}/{token}"
+            print(password_reset_url)
+            reset_url = f"{password_reset_url}"
+            subject = "Cannjah - Reset Password"
+            # message = render_to_string('password_reset_email.html', {
+            #     'user': user,
+            #     'reset_url': reset_url,
+            # })
+
+            # send_mail(subject, 'cannjah@gmail.com', [email])
+            return Response(status=status.HTTP_200_OK, data={"details": "Password Reset Email have been sent successfully"})
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"details": str(e)})
+
+class ResetPasswordView(APIView):
+    def post(self, request, uid, token):
+        try:
+            email = urlsafe_base64_decode(uid).decode('utf-8')
+            if not email:
+                return Response(status=status.HTTP_401_UNAUTHORIZED, data={"details": "Invalid/Unauthorized Request"})
+            
+            try:
+                user = User.objects.get(email=email)
+            except:
+                user = None
+
+            if not user:
+                return Response(status=status.HTTP_401_UNAUTHORIZED, data={"details": "Invalid/Unauthorized Request"})
+
+            if not default_token_generator.check_token(user, token):
+                return Response(status=status.HTTP_401_UNAUTHORIZED, data={"details": "Invalid/Unauthorized Request"})
+
+            data = request.data
+            new_password = data.get("new_password")
+            confirm_password = data.get("confirm_password")
+            if new_password != confirm_password:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data={"details": "Password Mismatch"})
+
+            user.set_password(new_password)
+            user.save()
+            return Response(status=status.HTTP_200_OK, data={"details": "Password reset successfully"})
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"details": str(e)})
