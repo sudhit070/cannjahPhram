@@ -23,6 +23,8 @@ from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.urls import reverse
+
+from datetime import timedelta
 # Create your views here.
 
 
@@ -42,11 +44,11 @@ class ContactQueriesView(APIView):
 def verify_age(request):
     try:
         meta = request.META
-        ip = meta.get('HTTP_X_FORWARDED_FOR') or meta.get('REMOTE_ADDR') or None
+        ip = meta.get('HTTP_X_FORWARDED_FOR') or meta.get('REMOTE_ADDR')
         request_browser = meta.get('HTTP_USER_AGENT')
         user_agent = str(parse(request_browser))
         visited_time = int(time.time())
-        age = request.GET.get('age')
+        age = request.GET.get('age', 19)
         uid = generateVisitorToken(f"{visited_time}:{ip}:{age}")
         data_dict = {
             "ip": ip,
@@ -57,7 +59,7 @@ def verify_age(request):
         serializer = VisistorLogsSerializer(data=data_dict)
         serializer.is_valid(raise_exception=True)
         serializer = serializer.save()
-        return Response(data={"token": serializer.uuid, "ttl": 3600*24*15}, status=status.HTTP_200_OK)
+        return Response(data={"token": serializer.uuid, "ttl": timedelta(days=15)}, status=status.HTTP_200_OK)
     except Exception as e:
         return Response(data=str(e), status=status.HTTP_400_BAD_REQUEST)
 
