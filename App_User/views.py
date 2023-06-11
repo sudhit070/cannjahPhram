@@ -69,11 +69,12 @@ class RegisterUser(generics.GenericAPIView):
     
     def post(self, request, *args, **kwargs):
         try:
-            data = request.data
-            del data['email']
+            data = json.loads(request.body.decode('utf-8'))
+            # data = request.data
             serializer = self.serializer_class(data=data)
             serializer.is_valid(raise_exception=True)
             validated_data = serializer.validated_data
+            del data['email']
             email = validated_data['email']
             try:
                 password = validated_data['password']

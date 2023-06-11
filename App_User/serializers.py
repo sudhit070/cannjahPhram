@@ -21,5 +21,13 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         return token
 
 class UserSerializer(serializers.Serializer):
+    model = User
+
     email = serializers.EmailField()
     password = serializers.CharField(required=False)
+
+    def validate_email(self, value):
+        print(value)
+        if self.model.objects.filter(email=value).exists():
+            return serializers.ValidationError("Email already registered")
+        return value
