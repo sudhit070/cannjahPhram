@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from common.constants import USER_TYPE
 from common.enums import UserType
 from .manager import UserManager
+from typing import Any
 # Create your models here.
 
 class BaseModel(models.Model):
@@ -16,9 +17,13 @@ class ContactQueries(models.Model):
     subject = models.CharField(max_length=200, null=False, blank=False)
     message = models.TextField(null=False, blank=False)
     create_on = models.DateTimeField(auto_now_add=True)
+    read = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.email)
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
 
 class VisistorLogs(BaseModel):
     ip = models.GenericIPAddressField()

@@ -9,7 +9,7 @@ from common.common_methods import generateVisitorToken
 from django.views.decorators.http import require_http_methods
 from rest_framework.decorators import api_view
 from rest_framework import generics
-from .models import User
+from .models import User, ContactQueries
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 
@@ -25,10 +25,15 @@ from django.utils.encoding import force_bytes
 from django.urls import reverse
 
 from datetime import timedelta
+
+from datetime import datetime
 # Create your views here.
 
 
 class ContactQueriesView(APIView):
+    model = ContactQueries
+    serializer_class = ContactQueriesSerializer
+
     def post(self, request):
         try:
             data = json.loads(request.body.decode("utf-8"))
@@ -38,6 +43,72 @@ class ContactQueriesView(APIView):
             return Response(data={"details": "Successfully registered"},status=status.HTTP_200_OK)
         except Exception as e:
             return Response(data=str(e), status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+        action = request.GET.get("action")
+        request_data = request.data
+        resp_dict = {"details": "No Data Found", "status": 0}
+
+        if action == "all":
+            data = self.model.objects.all().order_by("-id")
+        elif action == "unread":
+            data = self.model.objects.filter(read=False).order_by("-id")
+        elif action == "read":
+            data = self.model.objects.filter(read=True).order_by("-id")
+        elif action == "filter":
+            start_date = request_data.get("start_date", "")
+            end_date = request_data.get("end_date", "")
+
+            if not start_date or end_date:
+                return Response(data=resp_dict, status=status.HTTP_400_BAD_REQUEST)
+
+            start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+            end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
+            data = self.model.objects.filter(create_on__range=[start_date, end_date]).order_by("-id")
+        elif action == "particular":
+            email = request_data.get("email", "")
+
+            if not email:
+                return Response(data=resp_dict, status=status.HTTP_400_BAD_REQUEST)
+            data = self.model.objects.filter(email=email).order_by("-id")
+
+        if data:
+            serializer = self.serializer_class(data, many=True)
+            resp_dict["details"] = "Data Found"
+            resp_dict["status"] = 1
+            resp_dict["result"] = serializer.data
+            return Response(data=resp_dict, status=status.HTTP_200_OK)
+        
+        return Response(data=resp_dict, status=status.HTTP_400_BAD_REQUEST)
+
+class ContactQueryDetailView(APIView):
+    model = ContactQueries
+    serializer_class = ContactQueriesSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, pk):
+        try:
+            contact_query = self.model.objects.get(id=pk)
+            return contact_query
+        except self.model.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        contact_query = self.get_object(pk)
+        if contact_query:
+            serializer = self.serializer_class(contact_query)
+            return Response(status=status.HTTP_200_OK, data={"data": serializer.data, "details": "Query Found"})
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND, data={"details": "Oops! No such Query Found"})
+    
+    def post(self, request, pk):
+        contact_query = self.get_object(pk=pk)
+        if contact_query:
+            contact_query.read = True
+            contact_query.save()
+            return Response(data={"details": "Contact Query Marked as Read"}, status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND, data={"details": "Oops! No such Query Found"})
 
 @api_view(["GET"])
 @require_http_methods(["GET"])
@@ -70,10 +141,10 @@ class RegisterUser(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         try:
             data = request.data
-            del data['email']
             serializer = self.serializer_class(data=data)
             serializer.is_valid(raise_exception=True)
             validated_data = serializer.validated_data
+            del data['email']
             email = validated_data['email']
             try:
                 password = validated_data['password']

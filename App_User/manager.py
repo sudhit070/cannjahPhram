@@ -1,20 +1,25 @@
 from django.contrib.auth.base_user import BaseUserManager
+from common.common_methods import send_email
 
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
     def create_user(self, email, password=None, **kwargs):
-        print("hereeeee")
         if not email:
             raise ValueError("Email is required")
-
         if password is None:
             password='Cannjah@1234'
-        print(kwargs)
         email = self.normalize_email(email=email)
         user = self.model(email=email, **kwargs)
         user.set_password(password)
         user.save(using=self._db)
+        subject = "Registartion Succesfull @CannjahPharm"
+        message = f"""Dear user,
+        \n You're registration with CannjahPharm has been successfully approved, 
+        \n Please find below id and password to login on our portal
+        \n\n email: {email} 
+        \n Password: {password}"""
+        send_email(to_email=email, subject=subject, message=message)
         return user
 
     def create_superuser(self, email, password=None, **kwargs):
